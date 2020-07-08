@@ -1,124 +1,100 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
-  <head>
-    <title>Registration Page</title>
-    <link rel="stylesheet" type="text/css" href="css/bootstrap.css" />
-  </head>
-  <body>
-    <!-- The core Firebase JS SDK is always required and must be listed first -->
-<script src="/__/firebase/7.15.5/firebase-app.js"></script>
-
-<!-- TODO: Add SDKs for Firebase products that you want to use
-     https://firebase.google.com/docs/web/setup#available-libraries -->
-<script src="/__/firebase/7.15.5/firebase-analytics.js"></script>
-
-<!-- Initialize Firebase -->
-<script src="/__/firebase/init.js"></script>
-  </body>
-  <body>
-    <div class="container">
-      <div class="row col-md-6 col-md-offset-3">
-        <div class="panel panel-primary">
-          <div class="panel-heading text-center">
-            <h1>Registration Form</h1>
-          </div>
-          <div class="panel-body">
-            <form action="connect.php" method="post">
-              <div class="form-group">
-                <label for="firstName">First Name</label>
-                <input
-                  type="text"
-                  class="form-control"
-                  id="firstName"
-                  name="firstName"
-                />
-              </div>
-              <div class="form-group">
-                <label for="lastName">Last Name</label>
-                <input
-                  type="text"
-                  class="form-control"
-                  id="lastName"
-                  name="lastName"
-                />
-              </div>
-              <div class="form-group">
-                <label for="gender">Gender</label>
-                <div>
-                  <label for="male" class="radio-inline"
-                    ><input
-                      type="radio"
-                      name="gender"
-                      value="m"
-                      id="male"
-                    />Male</label
-                  >
-                  <label for="female" class="radio-inline"
-                    ><input
-                      type="radio"
-                      name="gender"
-                      value="f"
-                      id="female"
-                    />Female</label
-                  >
-                  <label for="others" class="radio-inline"
-                    ><input
-                      type="radio"
-                      name="gender"
-                      value="o"
-                      id="others"
-                    />Others</label
-                  >
-                </div>
-              </div>
-              <div class="form-group">
-                <label for="email">Email</label>
-                <input
-                  type="text"
-                  class="form-control"
-                  id="email"
-                  name="email"
-                />
-              </div>
-              <div class="form-group">
-                <label for="password">Password</label>
-                <input
-                  type="password"
-                  class="form-control"
-                  id="password"
-                  name="password"
-                />
-              </div>
-              <div class="form-group">
-                <label for="number">Phone Number</label>
-                <input
-                  type="number"
-                  class="form-control"
-                  id="number"
-                  name="number"
-                />
-              </div>
-              <input type="submit" class="btn btn-primary" />
-            </form>
-          </div>
-          <div class="panel-footer text-right">
-            <small>&copy; Technical Babaji</small>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="toast" role="alert" aria-live="assertive" aria-atomic="true">
-  <div class="toast-header">
-    <img src="..." class="rounded mr-2" alt="...">
-    <strong class="mr-auto">Bootstrap</strong>
-    <small>11 mins ago</small>
-    <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
-      <span aria-hidden="true">&times;</span>
-    </button>
-  </div>
-  <div class="toast-body">
-    Hello, world! This is a toast message.
-  </div>
-</div>
-  </body>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1">
+		<!-- Scripts and CSS -->
+		<link rel="stylesheet" type="text/css" href="./CSS/jquery.mobile-1.4.3.css" />
+		<script src="./JS/jquery-1.11.1.min.js"></script>
+		<script src="./JS/jquery.mobile-1.4.3.js"></script>
+		<script src="./JS/underscore-min.js"></script>
+		<script src="./JS/backbone-min.js"></script>
+		<script src="./JS/mustache.min.js"></script>
+		<script src="./JS/json2.min.js"></script>
+		<script src="./JS/rummy.js"></script>
+	</head>
+	<body>
+		<div id="mainContent"></div>
+		<!-- Application templates -->
+		<!-- Landing/Main template, renders after a refresh -->
+		<script id="mainTemplate" type="text/template">
+			<input type="text" placeholder="Enter Team Name, Defult: 'My Team'" id="teamName">
+			<input type="number" placeholder="Enter Game Total Score, Defult: 210" id="gameTotalScore">
+			<input type="number" placeholder="Enter Fold Score, Defult: 25" id="foldScore">
+		    <button id="renderUserManagement" class="ui-btn ui-btn-b ui-shadow ui-corner-all ui-btn-icon-right ui-icon-arrow-r">Continue</button>
+		    <h4 class="ui-bar ui-bar-a ui-corner-all ui-icon-alert ui-btn-icon-left">Board Information - Please read before start</h4>
+		    <div class="ui-body ui-body-a ui-corner-all">
+		    	<ul>
+		    		<li>Refresh will lose all the data</li>
+		    		<li>Navigating to home will clear the data</li>
+		    		<li>Incase you want to start a new game you can refresh or navigate to home</li>
+		    	</ul>
+		    </div>
+		</script>
+		<!-- Teamplate for rendering Header in different views -->
+		<script type="text/template" id="headerContent">
+			<div data-role="header" data-theme='b' id='headerDiv'>
+				{{#isHome}}
+					<button class="ui-btn ui-shadow ui-corner-all ui-btn-icon-left ui-icon-home ui-btn-icon-notext ui-btn-b" id="homeButton">Home</button>
+				{{/isHome}}
+				{{^isHome}}
+					<button class="ui-btn ui-shadow ui-corner-all ui-btn-icon-left ui-icon-arrow-l ui-btn-icon-notext ui-btn-b" id="backButton">Home</button>
+				{{/isHome}}
+				<h1>{{message}}</h1>
+				{{#needAddUser}}
+				<button class="ui-btn ui-shadow ui-corner-all ui-btn-icon-left ui-icon-user ui-btn-icon-notext ui-btn-b" id="addUserBtn">
+				{{/needAddUser}}
+			</div>
+		</script>
+		<!-- Teamplate for adding the users in the team -->
+		<script type="text/template" id='addUserTemplate'>
+			<div id='addUserTableDiv'>
+				<table>
+					<tr>
+					<td><input type="text" class="ui-mini" id="userNameEle" placeholder="Enter User Name"></td>
+					<td>
+						<button class="ui-btn ui-shadow ui-corner-all ui-icon-check ui-btn-icon-notext ui-btn-b ui-btn-inline" id="addIndividualUser"></button>
+					</td>
+					<td>
+						<button class="ui-btn ui-shadow ui-corner-all ui-icon-minus ui-btn-icon-notext ui-btn-b ui-btn-inline" id="removeIndividualUser"></button>
+					</td>
+					<td>
+						<p id='errorMessage' style='color:red'></p>
+					</td>
+					<tr>
+				</table>
+			</div>
+			<button id="startGameBtn" class="ui-btn ui-btn-b ui-shadow ui-corner-all">Start Game</button>
+		</script>
+		<!-- Template for Game Board -->
+		<script type="text/template" id="gameTemplate">
+			<table id="gameBoardTable">
+			{{#players}}
+				<tr>
+					<td> <button class="ui-btn ui-mini ui-shadow ui-corner-all ui-btn-icon-left ui-icon-user" id='userNameBtn'>{{name}}</button> </td>
+					<td> <input type="number" placeholder="Enter Score" id='playerScoreText'> </td>
+					<td> <button class="ui-btn ui-btn-b ui-corner-all ui-mini" id='foldBtn'>Fold</button> </td>
+					<td> <button class="ui-btn ui-mini ui-shadow ui-corner-all ui-btn-icon-left ui-icon-star" id='scoreBtn'>{{score}}</button></td>
+					<td><p id='errorScoreMessage' style='color:red'></p></td>
+				</tr>
+			{{/players}}
+			</table>
+			<button id="updatePlayersScoreBtn" class="ui-btn ui-btn-b ui-shadow ui-corner-all">Update Score</button>
+		</script>
+		<!-- Template for player details -->
+		<script type="text/template" id='playerDetailTemplate'>
+			<div data-role="header" data-theme='b' id='headerDiv'>
+				<button class="ui-btn ui-shadow ui-corner-all ui-btn-icon-left ui-icon-arrow-l ui-btn-icon-notext ui-btn-b" id="backButton"></button>
+				<h1>{{name}}</h1>
+			</div>
+			<table>
+				<tr><th>Total Score</th><td>{{score}}</td></tr>
+				<tr><th>Number Of Folds</th><td>{{numFolds}}</td></tr>
+				<tr><th>Score Details</th></tr>
+				{{#scores}}
+					<tr><td></td><td>{{.}}</td></tr>
+				{{/scores}}
+			</table>
+		</script>
+	</body>
 </html>
